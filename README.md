@@ -16,8 +16,59 @@ The [transform script](transform.py) takes as input three files:
 #### Graph partitioning
 Starting from [links.csv](input/links.csv), it is possible to create a graph where nodes are ASes while links the relationships between them.
 
-The script partitions the graph _G_ into _n_ groups _P1_, _P2_, ..., _Pn_ according to the following procedure:
-1. The first partition _P1_ is given by the set of ASes belonging to the Tier1;
-2. _P2_ is computed starting from _P1_ and it is given by the nodes directly linked (i.e., connected with a path of one link) to the ones contained in _P1_;
-3. _Pn_ is computed starting from from _Pn-1_ and it is given by the nodes directly linked to the ones contained inf _Pn-1_.
+The script partitions the graph _G_ into _n_ groups _P<sub>1</sub>_, _P<sub>2</sub>_, ..., _P<sub>n</sub>_ according to the following procedure:
+1. The first partition _P<sub>1</sub>_ is given by the set of ASes belonging to the Tier1;
+2. _P<sub>2</sub>_ is computed starting from _P<sub>1</sub>_ and it is given by the nodes directly linked (i.e., connected with a path of one link) to the ones contained in _P<sub>1</sub>_;
+3. _P<sub>n</sub>_ is computed starting from from _P<sub>n-1</sub>_ and it is given by the nodes directly linked to the ones contained inf _P<sub>n-1</sub>_;
 4. This process is repetedly computed until no nodes remain.
+
+#### Hierarchy
+Partitions are hierarchically structured using the Python [nesting package](https://pypi.python.org/pypi/nesting/0.1.0). The ASes of each partitions are grouped into a hierarchically tree structure defined using AS attributes. For instance, the IP version or the regional Internet registry (RIR) can be used to this aim.
+
+#### Output
+The script prints on the standard output the hierarchy as a JSON file. A possible output is structured as follows:
+```
+{
+  "children": [
+    {
+      "id": "group1",
+      "children": [
+        {
+          "id": "v4",
+          "children": [
+            {
+              "id": "ARIN",
+              "children": [
+                {
+                  "ipv": "v4",
+                  "rir": "ARIN",
+                  "group": 1,
+                  "id": "1",
+                  "label": "LVLT-1 - Level 3 Communications, Inc."
+                },
+                ...
+              ]
+            },
+            {
+              "id": "RIPE NCC",
+              "children": [...]
+            },
+            ...
+          ]
+        },
+        {
+          "id": "v4+v6",
+          "children": [...]
+        },
+        {
+          "id": "v6",
+          "children": [...]
+        }
+      ]
+    },
+    ...
+    {
+      "id": "groupn",
+      "children": [...]
+    }
+```
