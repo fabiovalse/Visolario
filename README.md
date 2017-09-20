@@ -71,4 +71,7 @@ The script prints on the standard output the hierarchy as a JSON file. A possibl
       "id": "groupn",
       "children": [...]
     }
+  ...
+  ]
+}
 ```
