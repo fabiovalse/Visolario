@@ -1,6 +1,5 @@
 import csv
 import json
-from itertools import groupby
 from nesting import Nest
 
 json_output = {}
@@ -10,8 +9,7 @@ tiers = []
 tiers_links = []
 tiers_internal_links = []
 
-""" DATA loading
-"""
+# DATA loading
 with open('input/tier1.txt') as tier1_data:
   tiers.append(set(tier1_data.read().split('\n')))
 
@@ -23,8 +21,7 @@ with open('input/as_details.json') as as_details_data:
   for d in json.load(as_details_data):
     as_details[d['AS_number']] = d
 
-""" Compute the set of the AUTONOMOUS SYSTEM
-"""
+# Compute the set of the AUTONOMOUS SYSTEM
 ASs = set()
 for l in links:
   ASs.add(l[0])
@@ -33,12 +30,10 @@ for l in links:
 LINKS_AMOUNT = len(links)
 ASS_AMOUNT = len(ASs)
 
-""" Check if TIER1 is a subset of 
-"""
+# Check if TIER1 is a subset of
 assert ASs.issuperset(tiers[0]), "Tier1 is not completely contained in topology."
 
-""" Computing TIERS
-"""
+# Computing TIERS
 index = 0
 
 # Loop until no links remains
@@ -79,28 +74,24 @@ while len(links) > 0:
   links = new_links
   index += 1
 
-""" Check if the amount of AUTONOMOUS SYSTEMS generated fits the initial set amount
-"""
+# Check if the amount of AUTONOMOUS SYSTEMS generated fits the initial set amount
 ass_count = reduce((lambda x, y: x + y), map(lambda x: len(x), tiers))
 assert ASS_AMOUNT == ass_count, "Bad total amount of ASs."
 
-""" Check if the amount of LINKS generated fits the initial set amount
-"""
+# Check if the amount of LINKS generated fits the initial set amount
 links_count = reduce((lambda x, y: x + y), tiers_links+tiers_internal_links)
 assert LINKS_AMOUNT == links_count, "Bad total amount of links."
 
-""" If INTERNAL LINKS remain in the last tier, a new EMPTY TIER will be appended to the tier list
-"""
+# If INTERNAL LINKS remain in the last tier, a new EMPTY TIER will be appended to the tier list
 if len(tiers[-1]) == 0:
   tiers = tiers[:-1]
 
 
-""" LOGGING STATISTICS
-    Uncomment to log statistics. For each TIER the following values are printed:
-    - number of autonomous systems it contains
-    - number of links connect it to other tiers
-    - number of internal links connecting the autonomous systems it contains
-"""
+# LOGGING STATISTICS
+# Uncomment to log statistics. For each TIER the following values are printed:
+#  - number of autonomous systems it contains
+#  - number of links connect it to other tiers
+#  - number of internal links connecting the autonomous systems it contains
 # for (i,t) in enumerate(tiers):
 #   print "\nTIER-" + str(i+1)
 #   print "- AS AMOUNT: " + str(len(t))
@@ -112,13 +103,12 @@ if len(tiers[-1]) == 0:
 # exit()
 
 
-""" COMPUTE OUTPUT DATA
-"""
+# COMPUTE OUTPUT DATA
 
-""" Transforms the nested namedtuple structure returned by the Nest()
-    function to a JSON serializable form.
-"""
 def transform(data):
+  """ Transforms the nested namedtuple structure returned by the Nest()
+      function to a JSON serializable form.
+  """
   new_data = []
 
   for d in data:
@@ -132,18 +122,17 @@ def transform(data):
 
   return new_data
 
-""" Computes the nesting of the data according to keys
-    passed to the Nest() function.
-"""
 def nest(data):
+  """ Computes the nesting of the data according to keys
+      passed to the Nest() function.
+  """
   result = (Nest()
     .key('ipv')
     .key('rir')
     .entries(data))
   return transform(result)
 
-""" Computes the final JSON structure
-"""
+# Computes the final JSON structure
 json_output['children'] = map(
   lambda (i,t): {
     "id": "group"+str(i+1),
