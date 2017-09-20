@@ -87,22 +87,6 @@ if len(tiers[-1]) == 0:
   tiers = tiers[:-1]
 
 
-# LOGGING STATISTICS
-# Uncomment to log statistics. For each TIER the following values are printed:
-#  - number of autonomous systems it contains
-#  - number of links connect it to other tiers
-#  - number of internal links connecting the autonomous systems it contains
-# for (i,t) in enumerate(tiers):
-#   print "\nTIER-" + str(i+1)
-#   print "- AS AMOUNT: " + str(len(t))
-#   if i < len(tiers_links):
-#     print "- LINKS: " + str(tiers_links[i])
-#     print "- INTERNAL LINKS: " + str(tiers_internal_links[i])
-# print "\nTOTAL AMOUNT of LINKS: " + str(LINKS_AMOUNT)
-# print "TOTAL AMOUNT of AUTONOMOUS SYSTEMS: " + str(ASS_AMOUNT) + "\n"
-# exit()
-
-
 # COMPUTE OUTPUT DATA
 
 def transform(data):
@@ -122,14 +106,15 @@ def transform(data):
 
   return new_data
 
-def nest(data):
+def nest(data, keys):
   """ Computes the nesting of the data according to keys
       passed to the Nest() function.
   """
-  result = (Nest()
-    .key('ipv')
-    .key('rir')
-    .entries(data))
+  nest = Nest()
+  for k in keys:
+    nest.key(k)
+  result = nest.entries(data)
+
   return transform(result)
 
 # Computes the final JSON structure
@@ -143,9 +128,10 @@ json_output['children'] = map(
             "label": as_details[as_number]['name'] if as_number in as_details else '',
             "group": i+1,
             "ipv": as_details[as_number]['IP_versions'] if as_number in as_details else '',
-            "rir": as_details[as_number]['RIR'] if as_number in as_details else '',
-          }, t)
-        )
+            "rir": as_details[as_number]['RIR'] if as_number in as_details else ''
+          }, t),
+        ['ipv', 'rir']
+      )
   }, enumerate(tiers))
 
 print json.dumps(json_output)
