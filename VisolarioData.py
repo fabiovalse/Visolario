@@ -3,15 +3,16 @@ import json
 from nesting import Nest
 
 class VisolarioData:
-  as_details = {}
-  partitions = []
-  partitions_links = []
-  partitions_internal_links = []
-
+  
   def __init__(self, tier1_path, topology_path, as_details_path):
     self.tier1_path = tier1_path
     self.topology_path = topology_path
     self.as_details_path = as_details_path
+
+    self.as_details = {}
+    self.partitions = []
+    self.partitions_links = []
+    self.partitions_internal_links = []
 
     with open(self.tier1_path) as tier1_data:
       self.partitions.append(set(tier1_data.read().split('\n')))
