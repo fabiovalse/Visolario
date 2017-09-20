@@ -107,13 +107,13 @@ class VisolarioData:
 
     json_output['children'] = map(
       lambda (i,t): {
-        "id": "group"+str(i+1),
+        "id": "partition"+str(i+1),
         "children": self.nest(
             map(
               lambda as_number: {
                 "id": as_number,
                 "label": self.as_details[as_number]['name'] if as_number in self.as_details else '',
-                "group": i+1,
+                "partition": i+1,
                 "ipv": self.as_details[as_number]['IP_versions'] if as_number in self.as_details else '',
                 "rir": self.as_details[as_number]['RIR'] if as_number in self.as_details else ''
               }, t),
@@ -122,6 +122,24 @@ class VisolarioData:
       }, enumerate(self.partitions))
 
     return json_output
+
+  def get_statistics(self):
+    """ Returns a JSON structure with statistics about the partitions.
+        Each partition is described by the following attributes:
+          - number of autonomous systems it contains
+          - number of links that connect it the subsequent partition
+          - number of internal links between the autonomous systems of the partition
+    """
+    return json.dumps({
+      "as_n": ASS_AMOUNT,
+      "links": LINKS_AMOUNT,
+      "partitions": [{
+        "id": i+1,
+        "as_n": len(t),
+        "links": self.partitions_links[i] if i < len(self.partitions_links) else 0,
+        "internal_links": self.partitions_internal_links[i] if i < len(self.partitions_links) else 0
+      } for (i,t) in enumerate(self.partitions)]
+    })
 
   def nest(self, data, keys):
     """ Computes the nesting of the data according to keys passed to the Nest() function.
