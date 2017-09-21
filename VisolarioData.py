@@ -1,29 +1,15 @@
-import csv
 import json
 from nesting import Nest
 
 class VisolarioData:
   
-  def __init__(self, tier1_path, topology_path, as_details_path):
-    self.tier1_path = tier1_path
-    self.topology_path = topology_path
-    self.as_details_path = as_details_path
+  def __init__(self, tier1, topology, as_details):
+    self.partitions = [tier1]
+    self.links = topology
+    self.as_details = as_details
 
-    self.as_details = {}
-    self.partitions = []
     self.partitions_links = []
     self.partitions_internal_links = []
-
-    with open(self.tier1_path) as tier1_data:
-      self.partitions.append(set(tier1_data.read().split('\n')))
-
-    with open(self.topology_path) as links_data:
-      reader = csv.reader(links_data, delimiter=' ')
-      self.links = list(reader)
-
-    with open(self.as_details_path) as as_details_data:
-      for d in json.load(as_details_data):
-        self.as_details[d['AS_number']] = d
 
     # Compute the set of Autonomous Systems (ASes)
     self.ASes = set()
@@ -131,7 +117,7 @@ class VisolarioData:
           - number of links that connect it the subsequent partition
           - number of internal links between the autonomous systems of the partition
     """
-    return json.dumps({
+    return {
       "as_n": ASS_AMOUNT,
       "links": LINKS_AMOUNT,
       "partitions": [{
@@ -140,7 +126,7 @@ class VisolarioData:
         "links": self.partitions_links[i] if i < len(self.partitions_links) else 0,
         "internal_links": self.partitions_internal_links[i] if i < len(self.partitions_links) else 0
       } for (i,t) in enumerate(self.partitions)]
-    })
+    }
 
   def nest(self, data, keys):
     """ Computes the nesting of the data according to keys passed to the Nest() function.
