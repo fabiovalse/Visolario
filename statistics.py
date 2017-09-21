@@ -20,8 +20,6 @@ topology_files = glob.glob("./input/six_months_topologies/*")
 
 # Loop over topology files
 for topology_file in topology_files:
-  print topology_file
-
   # Loading topology file
   with open(topology_file) as links_data:
     reader = csv.reader(links_data, delimiter=' ')
