@@ -16,7 +16,7 @@ with open('input/as_details.json') as as_details_data:
     as_details[d['AS_number']] = d
 
 # Get topology file paths
-topology_files = glob.glob("./input/six_months_topologies/*")
+topology_files = glob.glob("./input/stability_analysis/*")
 
 # Loop over topology files
 for topology_file in topology_files:
