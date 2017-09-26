@@ -102,7 +102,8 @@ class VisolarioData:
                 "label": self.as_details[as_number]['name'] if as_number in self.as_details else '',
                 "partition": i+1,
                 "ipv": self.as_details[as_number]['IP_versions'] if as_number in self.as_details else '',
-                "rir": self.as_details[as_number]['RIR'] if as_number in self.as_details else ''
+                "rir": self.as_details[as_number]['RIR'] if as_number in self.as_details else '',
+                "geo": self.as_details[as_number]['geo'] if as_number in self.as_details else ''
               }, t),
             keys
           )
